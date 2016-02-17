@@ -81,15 +81,17 @@ jobs:
             - 4001:4001
             - 7001:7001
 
-        - name: shipyard_proxy
-          image: ehazlett/docker-proxy:latest
-          bind_ports:
-            - 2375:2375
-          bind_volumes:
-            - /var/vcap/sys/run/docker/docker.sock
-          env_vars:
-            - "PORT=2375"
-          command: "-d /var/vcap/sys/run/docker/docker.sock"
+        # Removing proxy for now, since I don't think we need it anymore
+        # but going to keep the config here just in case.
+        # - name: shipyard_proxy
+        #   image: ehazlett/docker-proxy:latest
+        #   bind_ports:
+        #     - 2375:2375
+        #   bind_volumes:
+        #     - /var/vcap/sys/run/docker/docker.sock
+        #   env_vars:
+        #     - "PORT=2375"
+        #   command: "-d /var/vcap/sys/run/docker/docker.sock"
 
         - name: shipyard_swarm_manager
           image: swarm:latest
@@ -97,7 +99,7 @@ jobs:
 
         - name: shipyard_swarm_agent
           image: swarm:latest
-          command: "join --addr ((meta.networks.controller_ip)):2375 etcd://((meta.networks.controller_ip)):4001"
+          command: "join --addr ((meta.networks.controller_ip)):4243 etcd://((meta.networks.controller_ip)):4001"
 
         - name: shipyard_controller
           image: "shipyard/shipyard:latest"
@@ -122,4 +124,4 @@ jobs:
       containers:
         - name: shipyard_swarm_agent
           image: swarm:latest
-          command: "join --addr 0.shipyard-node.default.datagov-dockerswarm.bosh:2375 etcd://((meta.networks.controller_ip)):4001"
+          command: "join --addr 0.shipyard-node.default.datagov-dockerswarm.bosh:4243 etcd://((meta.networks.controller_ip)):4001"
